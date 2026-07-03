@@ -1,14 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export const useCamera = () => {
   const [localStream, setLocalStream] = useState(null);
   const [cameraError, setCameraError] = useState(null);
   const [isCameraLoading, setIsCameraLoading] = useState(false);
+  const streamRef = useRef(null);
 
   const startCamera = useCallback(async () => {
     setIsCameraLoading(true);
     setCameraError(null);
     try {
+      // Return existing stream if already initialized to avoid duplicate prompts
+      if (streamRef.current) {
+        return streamRef.current;
+      }
+
       const constraints = {
         video: {
           width: { ideal: 640 },
@@ -19,6 +25,7 @@ export const useCamera = () => {
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
       setLocalStream(stream);
       setIsCameraLoading(false);
       return stream;
@@ -37,20 +44,22 @@ export const useCamera = () => {
   }, []);
 
   const stopCamera = useCallback(() => {
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-      setLocalStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
-  }, [localStream]);
+    setLocalStream(null);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach((track) => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
       }
     };
-  }, [localStream]);
+  }, []);
 
   return {
     localStream,
@@ -60,3 +69,4 @@ export const useCamera = () => {
     stopCamera,
   };
 };
+
