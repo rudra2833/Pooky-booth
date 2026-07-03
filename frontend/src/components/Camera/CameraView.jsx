@@ -11,7 +11,7 @@ import { BORDER_DESIGNS } from '../../styles/borderDesigns';
 import './Camera.css';
 
 const CameraView = () => {
-  const { socket, role, partnerConnected } = useRoom();
+  const { socket, role, partnerConnected, roomCode } = useRoom();
   const {
     customization,
     timerDuration,
@@ -69,19 +69,16 @@ const CameraView = () => {
 
   // Exit camera session
   const handleExit = () => {
-    socket.emit('partner-disconnected', { message: 'Session closed' });
-    window.location.reload(); // Refresh to clean up connections fully
+    stopCamera();
+    setStep('room');
   };
 
   // Show error states
   if (cameraError) {
     return (
-      <div className="camera-error-container glass-panel-pooky animate-pop-in text-center">
+      <div className="glass-panel-pooky text-center">
         <h2>Camera Access Error ⚠️</h2>
-        <p className="error-text">{cameraError}</p>
-        <Button onClick={startCamera} variant="primary" className="mt-4">
-          Try Again 🔄
-        </Button>
+        <p className="error-text" style={{ margin: '15px 0' }}>{cameraError}</p>
         <Button onClick={handleExit} variant="outline" className="mt-2">
           Back to Lobby 🚪
         </Button>
@@ -95,9 +92,9 @@ const CameraView = () => {
       {/* Top Banner Status Bar */}
       <div className="camera-banner glass-panel">
         <div className="banner-info">
-          <span className="room-badge">Room Code: <b>{socket?.roomCode || '...'}</b></span>
+          <span className="room-badge">Room Code: <b>{roomCode || '...'}</b></span>
           <span className={`rtc-status-badge ${rtcStatus}`}>
-            P2P: {rtcStatus === 'connected' ? 'Connected ⚡' : 'Connecting... 🔄'}
+            P2P: {rtcStatus === 'connected' ? 'Connected ⚡' : rtcStatus === 'error' ? 'Error ⚠️' : 'Connecting... 🔄'}
           </span>
         </div>
         <Button onClick={handleExit} variant="outline" size="sm">
