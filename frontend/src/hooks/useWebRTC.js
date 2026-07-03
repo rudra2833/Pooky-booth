@@ -57,17 +57,37 @@ export const useWebRTC = (socket, role, localStream, partnerConnected) => {
       const isLeader = role === 'leader';
 
       // Create a new simple-peer instance
+      // ICE servers: multiple STUN + free public TURN relays
+      // TURN servers are critical for users on the same Wi-Fi NAT or behind firewalls
+      const iceServers = [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        // Free TURN relay (open-relay.metered.ca) - works reliably for photo booth use
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+      ];
+
       const peer = new Peer({
         initiator: isLeader,
-        trickle: true, // Enable trickle ICE for faster and more resilient connections
+        trickle: true,
         stream: localStream,
-        config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-          ],
-        },
+        config: { iceServers },
       });
 
       peerRef.current = peer;
