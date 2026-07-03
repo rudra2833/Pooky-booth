@@ -1,0 +1,69 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.loader-pooky {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heart-bounce {
+  font-size: 2.2rem;
+  animation: heartBouncing 0.8s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.loader-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid var(--color-pink-light);
+  border-top-color: var(--color-pink-dark);
+  animation: spin 1s linear infinite;
+  z-index: 1;
+}
+
+.loader-text {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-text-dark);
+  text-align: center;
+  font-weight: 600;
+  animation: textPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes heartBouncing {
+  0% {
+    transform: translateY(3px) scale(0.95);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes textPulse {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}

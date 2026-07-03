@@ -1,0 +1,161 @@
+.preview-screen-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 10px;
+}
+
+.preview-header {
+  margin-bottom: 10px;
+}
+
+.preview-main-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 800px) {
+  .preview-main-layout {
+    grid-template-columns: 1fr 1.1fr;
+  }
+}
+
+.final-strip-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 30px;
+  border-radius: var(--radius-md);
+  border: var(--border-cute);
+  box-shadow: var(--shadow-glass);
+}
+
+.final-strip-img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+}
+
+.preview-actions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: fit-content;
+}
+
+.panel-section {
+  border-bottom: 2px dashed var(--color-pink-light);
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.panel-section h3 {
+  font-size: 1.25rem;
+}
+
+.section-help-text {
+  font-size: 0.9rem;
+  color: #7b6f84;
+  margin-bottom: 4px;
+}
+
+.retake-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.retake-slot-card {
+  position: relative;
+  aspect-ratio: 3/2;
+  border: var(--border-cute);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--color-text-dark);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.retake-slot-card:hover {
+  transform: scale(1.05) translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--color-text-dark);
+}
+
+.retake-slot-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.retake-slot-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(216, 180, 254, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.retake-slot-card:hover .retake-slot-overlay {
+  opacity: 1;
+}
+
+.retake-slot-overlay span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+  text-align: center;
+}
+
+.action-buttons-row {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .action-buttons-row {
+    flex-direction: row;
+  }
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.row-gap-sm {
+  gap: 8px;
+}
+
+.stitch-loading-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px !important;
+}
+
+.download-btn {
+  font-size: 1.2rem;
+  padding: 14px 28px;
+}

@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&family=Pacifico&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  /* Pastel & Cute Theme Colors */
+  --color-pink-light: #fff0f5;
+  --color-pink: #ffb7c5;
+  --color-pink-dark: #ff8fa3;
+  --color-purple-light: #f3e8ff;
+  --color-purple: #d8b4fe;
+  --color-purple-dark: #b87cf8;
+  --color-yellow-light: #fefde8;
+  --color-yellow: #fef08a;
+  --color-yellow-dark: #facc15;
+  --color-blue-light: #ecfeff;
+  --color-blue: #a5f3fc;
+  --color-blue-dark: #06b6d4;
+  --color-mint-light: #f0fdf4;
+  --color-mint: #bbf7d0;
+  --color-text-dark: #473c4f;
+  --color-text-light: #ffffff;
+  --color-shadow: rgba(255, 143, 163, 0.15);
+  --color-white: #ffffff;
+
+  /* Font Families */
+  --font-display: 'Fredoka', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-handwritten: 'Pacifico', cursive;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Borders & Shadows */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --shadow-cute: 0 8px 24px var(--color-shadow);
+  --shadow-glass: 0 8px 32px 0 rgba(255, 183, 197, 0.15);
+  --border-cute: 3px solid var(--color-text-dark);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-pink-light);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 240, 245, 0.5) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(243, 232, 255, 0.6) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(254, 253, 232, 0.4) 0%, transparent 50%);
+  color: var(--color-text-dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-pink-light);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-pink);
+  border-radius: 10px;
+  border: 2px solid var(--color-pink-light);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-pink-dark);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes flash-effect {
+  0% { background-color: rgba(255, 255, 255, 0); }
+  10% { background-color: rgba(255, 255, 255, 1); }
+  100% { background-color: rgba(255, 255, 255, 0); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Flash Overlay */
+.flash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  background-color: transparent;
+}
+.flash-overlay.flash-active {
+  animation: flash-effect 0.8s ease-out forwards;
+}
+
+/* Glassmorphism Cards */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 3px solid var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
+  padding: 30px;
+}
+
+.glass-panel-pooky {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--border-cute);
+  border-radius: var(--radius-md);
+  box-shadow: 8px 8px 0px var(--color-text-dark);
+  padding: 30px;
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--color-text-dark);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+.handwritten {
+  font-family: var(--font-handwritten);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Font picker utility fonts */
+.font-retro { font-family: var(--font-mono); }
+.font-cute { font-family: var(--font-display); }
+.font-classic { font-family: var(--font-body); }
+.font-handwritten { font-family: var(--font-handwritten); }
+
+/* Global Layout & Main App Wrapper */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.pooky-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.pooky-title {
+  font-size: 3rem;
+  color: var(--color-text-dark);
+  text-shadow: 3px 3px 0px var(--color-pink);
+  margin-bottom: 5px;
+}
+
+.pooky-subtitle {
+  font-family: var(--font-handwritten);
+  font-size: 1.5rem;
+  color: var(--color-pink-dark);
+}

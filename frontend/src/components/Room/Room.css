@@ -1,0 +1,185 @@
+.room-card, .lobby-card {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.lobby-mascot {
+  font-size: 5rem;
+  margin-bottom: -10px;
+}
+
+.lobby-description {
+  font-size: 1.1rem;
+  color: var(--color-text-dark);
+  margin-top: 15px;
+  line-height: 1.6;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.room-card-header {
+  text-align: center;
+}
+
+.title-cute {
+  font-size: 2.2rem;
+  color: var(--color-text-dark);
+}
+
+.subtitle-cute {
+  font-size: 1rem;
+  color: #7b6f84;
+  margin-top: 6px;
+}
+
+.room-code-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-pink-light);
+  border: var(--border-cute);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.room-code-label {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.room-code-display {
+  font-family: var(--font-mono);
+  font-size: 3.2rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--color-purple-dark);
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.15);
+  margin-bottom: 5px;
+}
+
+.connection-status-section {
+  text-align: center;
+  border-top: 2px dashed var(--color-pink);
+  padding-top: 20px;
+}
+
+.connection-status-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: var(--border-cute);
+}
+
+.status-indicator.connected {
+  background-color: var(--color-mint);
+}
+
+.status-indicator.waiting {
+  background-color: var(--color-yellow-light);
+  border: none;
+  padding: 0;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--color-text-dark);
+}
+
+.bg-connected {
+  background-color: #22c55e;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.room-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .room-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.room-actions-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 2.2rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 4px;
+  border: var(--border-cute);
+  border-radius: var(--radius-md);
+  outline: none;
+  background-color: var(--color-white);
+  color: var(--color-text-dark);
+  box-shadow: 4px 4px 0px var(--color-text-dark);
+  transition: all 0.2s ease;
+}
+
+.room-input:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--color-text-dark);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  border: 2px solid #ef4444;
+  color: #b91c1c;
+  padding: 12px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  margin: 12px 0;
+  font-size: 0.95rem;
+}
+
+.lobby-footer {
+  color: #9d8ea4;
+  margin-top: 10px;
+}
+
+.pulsing-dots {
+  animation: textPulse 1s infinite alternate;
+}
