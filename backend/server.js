@@ -67,6 +67,11 @@ io.on('connection', (socket) => {
       partnerId: socket.id,
       room,
     });
+
+    // Relay partner's name to leader if provided
+    if (data.partnerName) {
+      socket.to(roomCode).emit('partner-name', { name: data.partnerName });
+    }
   });
 
   // 3. WebRTC peer-to-peer signaling relay

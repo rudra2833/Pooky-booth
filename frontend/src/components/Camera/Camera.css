@@ -100,7 +100,23 @@
   flex: 1;
   position: relative;
   display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+
+.camera-name-tag {
+  text-align: center;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .camera-stream-wrapper {

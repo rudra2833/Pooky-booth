@@ -10,6 +10,9 @@ export const RoomProvider = ({ children }) => {
   const [partnerConnected, setPartnerConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle'); // 'idle' | 'waiting' | 'connected' | 'disconnected'
   const [error, setError] = useState(null);
+  const [disconnectMessage, setDisconnectMessage] = useState(null); // shown when partner/leader exits
+  const [myName, setMyName] = useState('');
+  const [partnerName, setPartnerName] = useState('');
 
   // Initialize socket connection
   useEffect(() => {
@@ -76,20 +79,19 @@ export const RoomProvider = ({ children }) => {
       setError(null);
     });
 
+    // Receive the partner's name (leader gets this when partner joins)
+    socket.on('partner-name', ({ name }) => {
+      setPartnerName(name);
+    });
+
     socket.on('partner-disconnected', ({ message }) => {
-      // If partner disconnects, leader goes back to waiting.
-      // If leader disconnects, partner room closes, goes to disconnected.
-      if (role === 'leader') {
-        setPartnerConnected(false);
-        setConnectionStatus('waiting');
-        setError(message);
-      } else {
-        setPartnerConnected(false);
-        setConnectionStatus('disconnected');
-        setRoomCode(null);
-        setRole(null);
-        setError(message);
-      }
+      // Both users go back to lobby with a message
+      setDisconnectMessage(message || 'Your partner left the room.');
+      setPartnerConnected(false);
+      setConnectionStatus('idle');
+      setRoomCode(null);
+      setRole(null);
+      setPartnerName('');
     });
 
     socket.on('room-full-error', () => {
@@ -106,23 +108,26 @@ export const RoomProvider = ({ children }) => {
       socket.off('room-created');
       socket.off('room-joined');
       socket.off('partner-connected');
+      socket.off('partner-name');
       socket.off('partner-disconnected');
       socket.off('room-full-error');
       socket.off('room-error');
     };
-  }, [socket, role]);
+  }, [socket]);
 
-  const createRoom = () => {
+  const createRoom = (name = '') => {
     if (!socket) return;
     setError(null);
+    setMyName(name);
     socket.emit('create-room');
   };
 
-  const joinRoom = (code) => {
+  const joinRoom = (code, name = '') => {
     if (!socket || !code) return;
     setError(null);
+    setMyName(name);
     setConnectionStatus('connecting');
-    socket.emit('join-room', { roomCode: code });
+    socket.emit('join-room', { roomCode: code, partnerName: name });
   };
 
   const resetRoom = () => {
@@ -131,6 +136,9 @@ export const RoomProvider = ({ children }) => {
     setPartnerConnected(false);
     setConnectionStatus('idle');
     setError(null);
+    setMyName('');
+    setPartnerName('');
+    setDisconnectMessage(null);
   };
 
   return (
@@ -144,6 +152,10 @@ export const RoomProvider = ({ children }) => {
         setConnectionStatus,
         error,
         setError,
+        disconnectMessage,
+        setDisconnectMessage,
+        myName,
+        partnerName,
         createRoom,
         joinRoom,
         resetRoom,

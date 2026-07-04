@@ -7,11 +7,12 @@ import './Room.css';
 const JoinRoom = ({ onBack }) => {
   const { joinRoom, error, connectionStatus } = useRoom();
   const [code, setCode] = useState('');
+  const [name, setName] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (code.length === 6) {
-      joinRoom(code);
+    if (code.length === 6 && name.trim().length > 0) {
+      joinRoom(code, name.trim());
     }
   };
 
@@ -28,11 +29,27 @@ const JoinRoom = ({ onBack }) => {
     <div className="room-card glass-panel-pooky animate-pop-in">
       <div className="room-card-header">
         <h2 className="title-cute">Join Partner 👯‍♀️</h2>
-        <p className="subtitle-cute">Enter the 6-digit room code shared by your partner.</p>
+        <p className="subtitle-cute">Enter your name and the 6-digit room code.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="room-form">
+
         <div className="input-group">
+          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Your Name 💕</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Priya"
+            className="room-input text-center"
+            maxLength={20}
+            disabled={isLoading}
+            autoFocus
+          />
+        </div>
+
+        <div className="input-group" style={{ marginTop: '12px' }}>
+          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Room Code 🔑</label>
           <input
             type="text"
             value={code}
@@ -41,7 +58,6 @@ const JoinRoom = ({ onBack }) => {
             className="room-input text-center"
             maxLength={6}
             disabled={isLoading}
-            autoFocus
           />
         </div>
 
@@ -54,7 +70,7 @@ const JoinRoom = ({ onBack }) => {
             <Button
               type="submit"
               variant="secondary"
-              disabled={code.length !== 6 || isLoading}
+              disabled={code.length !== 6 || name.trim().length === 0 || isLoading}
               className="w-full"
             >
               Connect Now ✨

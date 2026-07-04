@@ -6,7 +6,7 @@ import Loader from '../UI/Loader';
 import './Room.css';
 
 const CreateRoom = ({ onBack }) => {
-  const { roomCode, partnerConnected, connectionStatus } = useRoom();
+  const { roomCode, partnerConnected, myName, partnerName } = useRoom();
   const { setStep } = useBooth();
   const [copied, setCopied] = useState(false);
 
@@ -48,7 +48,9 @@ const CreateRoom = ({ onBack }) => {
         {partnerConnected ? (
           <div className="status-indicator connected animate-pulse-soft">
             <span className="dot bg-connected"></span>
-            <span className="status-text font-bold">Partner Joined! 🎉</span>
+            <span className="status-text font-bold">
+              {partnerName ? `${partnerName} joined! 🎉` : 'Partner Joined! 🎉'}
+            </span>
           </div>
         ) : (
           <div className="status-indicator waiting">
@@ -64,7 +66,7 @@ const CreateRoom = ({ onBack }) => {
           </Button>
         )}
         <Button onClick={onBack} variant="outline" size="sm">
-          Cancel & Exit 🚪
+          Cancel &amp; Exit 🚪
         </Button>
       </div>
     </div>

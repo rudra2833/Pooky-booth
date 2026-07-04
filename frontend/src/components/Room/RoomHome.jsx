@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useRoom } from '../../context/RoomContext';
+import { useBooth } from '../../context/BoothContext';
 import CreateRoom from './CreateRoom';
 import JoinRoom from './JoinRoom';
 import Button from '../UI/Button';
 import './Room.css';
 
 const RoomHome = () => {
-  // Local screen modes: 'lobby' | 'create' | 'join'
+  // Local screen modes: 'lobby' | 'name-entry' | 'create' | 'join' | 'partner-waiting'
   const [localMode, setLocalMode] = useState('lobby');
-  const { createRoom, resetRoom, connectionStatus, role, partnerConnected, roomCode } = useRoom();
+  const [leaderNameInput, setLeaderNameInput] = useState('');
+
+  const {
+    createRoom, resetRoom, connectionStatus, role,
+    roomCode, disconnectMessage, setDisconnectMessage,
+    myName, partnerName,
+  } = useRoom();
+
+  const { updateCustomization } = useBooth();
 
   // Reset room context when returning to lobby
   useEffect(() => {
@@ -20,7 +29,7 @@ const RoomHome = () => {
   // If connection status updates to waiting/connected from leader side,
   // we ensure localMode is 'create'.
   useEffect(() => {
-    if (connectionStatus === 'waiting' && localMode === 'lobby') {
+    if (connectionStatus === 'waiting' && localMode === 'name-entry') {
       setLocalMode('create');
     }
     // When partner successfully joins, transition from join form to the waiting screen
@@ -29,9 +38,31 @@ const RoomHome = () => {
     }
   }, [connectionStatus, localMode, role]);
 
+  // Auto-fill strip footer text when both names are known
+  useEffect(() => {
+    if (myName && partnerName) {
+      updateCustomization({ text: `${myName} & ${partnerName} 💕` });
+    } else if (myName) {
+      updateCustomization({ text: myName });
+    }
+  }, [myName, partnerName]);
+
+  // When disconnect message arrives, go back to lobby
+  useEffect(() => {
+    if (disconnectMessage) {
+      setLocalMode('lobby');
+    }
+  }, [disconnectMessage]);
+
   const handleCreateRoom = () => {
-    setLocalMode('create');
-    createRoom();
+    setLocalMode('name-entry');
+  };
+
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    if (leaderNameInput.trim().length === 0) return;
+    createRoom(leaderNameInput.trim());
+    // stays on name-entry until connectionStatus changes to 'waiting'
   };
 
   const handleJoinRoom = () => {
@@ -41,6 +72,48 @@ const RoomHome = () => {
   const handleBackToLobby = () => {
     setLocalMode('lobby');
   };
+
+  const handleDismissDisconnect = () => {
+    setDisconnectMessage(null);
+  };
+
+  // ── Leader name entry screen ──────────────────────────────────────────────
+  if (localMode === 'name-entry') {
+    return (
+      <div className="room-card glass-panel-pooky animate-pop-in">
+        <div className="room-card-header">
+          <h2 className="title-cute">What's your name? 💌</h2>
+          <p className="subtitle-cute">This will appear on your photo strip!</p>
+        </div>
+        <form onSubmit={handleNameSubmit} className="room-form">
+          <div className="input-group">
+            <input
+              type="text"
+              value={leaderNameInput}
+              onChange={(e) => setLeaderNameInput(e.target.value)}
+              placeholder="e.g. Rudra"
+              className="room-input text-center"
+              maxLength={20}
+              autoFocus
+            />
+          </div>
+          <div className="room-actions-vertical" style={{ marginTop: '16px' }}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={leaderNameInput.trim().length === 0}
+              className="w-full"
+            >
+              Create Room 🎈
+            </Button>
+            <Button onClick={handleBackToLobby} variant="outline" className="w-full">
+              Go Back ⬅️
+            </Button>
+          </div>
+        </form>
+      </div>
+    );
+  }
 
   if (localMode === 'create') {
     return <CreateRoom onBack={handleBackToLobby} />;
@@ -74,16 +147,41 @@ const RoomHome = () => {
     );
   }
 
+  // ── Lobby ─────────────────────────────────────────────────────────────────
   return (
     <div className="lobby-card glass-panel-pooky animate-pop-in text-center">
       <div className="lobby-mascot animate-float">📸</div>
-      
+
+      {/* Disconnect toast */}
+      {disconnectMessage && (
+        <div
+          className="pooky-alert"
+          style={{
+            marginBottom: '16px',
+            background: 'rgba(255,80,80,0.12)',
+            border: '1px solid rgba(255,80,80,0.4)',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
+          <span>👋 {disconnectMessage}</span>
+          <button
+            onClick={handleDismissDisconnect}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}
+          >✕</button>
+        </div>
+      )}
+
       <div className="lobby-content">
         <h1 className="pooky-title">Pooky Booth</h1>
         <p className="pooky-subtitle">long distance memories</p>
-        
+
         <p className="lobby-description">
-          A real-time photo booth that connects you with your partner, friends, or family 
+          A real-time photo booth that connects you with your partner, friends, or family
           miles away. Smile together, snap synced photos, and style beautiful memories!
         </p>
       </div>
@@ -98,7 +196,7 @@ const RoomHome = () => {
       </div>
 
       <div className="lobby-footer text-xs font-semibold">
-        <p>⚡ Powered by WebRTC & Socket.io for lag-free real-time connection</p>
+        <p>⚡ Powered by WebRTC &amp; Socket.io for lag-free real-time connection</p>
       </div>
     </div>
   );

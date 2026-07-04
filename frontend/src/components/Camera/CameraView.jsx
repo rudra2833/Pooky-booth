@@ -11,7 +11,7 @@ import { BORDER_DESIGNS } from '../../styles/borderDesigns';
 import './Camera.css';
 
 const CameraView = () => {
-  const { socket, role, partnerConnected, roomCode } = useRoom();
+  const { socket, role, partnerConnected, roomCode, myName, partnerName } = useRoom();
   const {
     customization,
     timerDuration,
@@ -123,6 +123,11 @@ const CameraView = () => {
                   label={isLeader ? 'YOU (LEADER)' : 'PARTNER (LEADER)'}
                   isLocal={isLeader}
                 />
+                <div className="camera-name-tag">
+                  {isLeader
+                    ? (myName || 'You 👑')
+                    : (partnerName || 'Partner 👑')}
+                </div>
               </div>
 
               {/* Partner's Stream (Right) */}
@@ -133,6 +138,11 @@ const CameraView = () => {
                   label={isLeader ? 'PARTNER' : 'YOU'}
                   isLocal={!isLeader}
                 />
+                <div className="camera-name-tag">
+                  {isLeader
+                    ? (partnerName || 'Partner 💕')
+                    : (myName || 'You 💕')}
+                </div>
               </div>
             </div>
 
