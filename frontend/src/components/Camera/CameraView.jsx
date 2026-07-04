@@ -88,6 +88,40 @@ const CameraView = () => {
     );
   }
 
+  const getDecorationsForStyle = () => {
+    switch (customization.style) {
+      case 'pink-pooky':
+      case 'pink-grid':
+        return ['💖', '✨', '💝', '✨', '💖', '✨', '💝', '💖'];
+      case 'starry-night':
+      case 'blue-grid':
+        return ['🌙', '⭐', '✨', '⭐', '🌙', '⭐', '✨', '⭐'];
+      case 'floral-garden':
+      case 'mint-grid':
+        return ['🌸', '🌿', '🌼', '🌿', '🌸', '🌿', '🌼', '🌸'];
+      case 'retro-90s':
+        return ['🔺', '🌀', '🟩', '🟡', '🔺', '🌀', '🟩', '🌀'];
+      case 'cute-kawaii':
+        return ['🐱', '🎀', '🍭', '🎀', '🐱', '🍭', '🎀', '🐱'];
+      case 'christmas-special':
+      case 'winter-snow':
+        return ['❄️', '🎄', '❄️', '⛄', '❄️', '🎄', '❄️', '❄️'];
+      case 'birthday-bash':
+        return ['🎈', '🎉', '🍰', '🎈', '🎉', '🎁', '🎈', '🎉'];
+      case 'aesthetic-purple':
+      case 'butterfly-magic':
+        return ['🦋', '✨', '💜', '✨', '🦋', '✨', '💜', '🦋'];
+      case 'cherry-blossom':
+        return ['🌸', '🌸', '💮', '🌸', '🌸', '💮', '🌸', '🌸'];
+      case 'ocean-vibes':
+        return ['🐚', '🌊', '⭐', '🌊', '🐚', '🌊', '⭐', '🐚'];
+      case 'dark-romance':
+        return ['🌹', '🥀', '🖤', '🌹', '🥀', '🖤', '🌹', '🥀'];
+      default:
+        return [];
+    }
+  };
+
   return (
     <div className="camera-screen-container animate-pop-in">
       <CountdownTimer />
@@ -108,7 +142,7 @@ const CameraView = () => {
         {/* Left Column: Webcam Feeds styled inside the border preview frame + Live Strip Preview side-by-side */}
         <div className="camera-feeds-panel" style={{ display: 'flex', gap: '16px', alignItems: 'stretch', width: '100%', maxWidth: '700px', margin: '0 auto' }}>
           <div
-            className="preview-frame-container"
+            className={`preview-frame-container border-${customization.style}`}
             style={{
               background: borderStyle.background,
               color: borderStyle.textColor,
@@ -117,9 +151,15 @@ const CameraView = () => {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              position: 'relative'
             }}
           >
+            {/* Small floating decor icons to match style */}
+            {getDecorationsForStyle().map((emoji, idx) => (
+              <span key={idx} className={`floating-decor d${idx + 1}`}>{emoji}</span>
+            ))}
+
             {/* Live Synchronized Feeds */}
             <div className="dual-camera-frame" style={{ width: '100%', boxSizing: 'border-box' }}>
               {/* Leader's Stream (Left) */}
