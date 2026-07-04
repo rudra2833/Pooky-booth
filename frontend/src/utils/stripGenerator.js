@@ -102,6 +102,12 @@ export const generatePhotoStrip = async (photos, customization) => {
     canvasFont = 'bold 28px "Fredoka", sans-serif';
   } else if (font === 'font-handwritten') {
     canvasFont = '32px "Pacifico", cursive';
+  } else if (font === 'font-romantic') {
+    canvasFont = '42px "Great Vibes", cursive';
+  } else if (font === 'font-loveletter') {
+    canvasFont = '36px "Parisienne", cursive';
+  } else if (font === 'font-serif') {
+    canvasFont = 'italic bold 24px "Playfair Display", serif';
   } else if (font === 'font-retro') {
     canvasFont = 'bold 22px "Space Mono", monospace';
   }

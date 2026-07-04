@@ -10,6 +10,9 @@ export const STRIP_DIMENSIONS = {
 export const FONTS_LIST = [
   { key: 'font-cute', name: 'Cute Fredoka', cssClass: 'font-cute' },
   { key: 'font-handwritten', name: 'Pooky Pacifico', cssClass: 'font-handwritten' },
+  { key: 'font-romantic', name: 'Great Vibes (Love 💌)', cssClass: 'font-romantic' },
+  { key: 'font-loveletter', name: 'Parisienne (Sweet 🎀)', cssClass: 'font-loveletter' },
+  { key: 'font-serif', name: 'Playfair (Classic 🌹)', cssClass: 'font-serif' },
   { key: 'font-retro', name: 'Retro Space Mono', cssClass: 'font-retro' },
   { key: 'font-classic', name: 'Classic Outfit', cssClass: 'font-classic' }
 ];

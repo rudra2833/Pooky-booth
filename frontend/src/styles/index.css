@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&family=Pacifico&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&family=Pacifico&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Great+Vibes&family=Parisienne&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
   /* Pastel & Cute Theme Colors */
@@ -8,14 +8,15 @@
   --color-purple-light: #f3e8ff;
   --color-purple: #d8b4fe;
   --color-purple-dark: #b87cf8;
-  --color-yellow-light: #fefde8;
-  --color-yellow: #fef08a;
-  --color-yellow-dark: #facc15;
+  --color-yellow-light: #fef9c3;
+  --color-yellow: #fde047;
+  --color-yellow-dark: #eab308;
   --color-blue-light: #ecfeff;
   --color-blue: #a5f3fc;
   --color-blue-dark: #06b6d4;
   --color-mint-light: #f0fdf4;
   --color-mint: #bbf7d0;
+  --color-mint-dark: #22c55e;
   --color-text-dark: #473c4f;
   --color-text-light: #ffffff;
   --color-shadow: rgba(255, 143, 163, 0.15);
@@ -26,6 +27,9 @@
   --font-body: 'Outfit', sans-serif;
   --font-handwritten: 'Pacifico', cursive;
   --font-mono: 'Space Mono', monospace;
+  --font-romantic: 'Great Vibes', cursive;
+  --font-loveletter: 'Parisienne', cursive;
+  --font-serif: 'Playfair Display', serif;
 
   /* Borders & Shadows */
   --radius-sm: 12px;
@@ -176,6 +180,9 @@ p {
 .font-cute { font-family: var(--font-display); }
 .font-classic { font-family: var(--font-body); }
 .font-handwritten { font-family: var(--font-handwritten); }
+.font-romantic { font-family: var(--font-romantic); }
+.font-loveletter { font-family: var(--font-loveletter); }
+.font-serif { font-family: var(--font-serif); }
 
 /* Global Layout & Main App Wrapper */
 .app-container {
