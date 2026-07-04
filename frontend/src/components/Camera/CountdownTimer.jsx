@@ -20,8 +20,9 @@ const CountdownTimer = () => {
   } = useBooth();
 
   const [count, setCount] = useState(null);
-  const [sessionProgress, setSessionProgress] = useState(''); // e.g. "Get Ready!"
-  const [targetIndex, setTargetIndex] = useState(0); // Which slot are we capturing
+  const [sessionProgress, setSessionProgress] = useState('');
+  const [targetIndex, setTargetIndex] = useState(0);
+  const [waitingForNext, setWaitingForNext] = useState(false); // manual pause between shots
 
   const timerRef = useRef(null);
   const isLeader = role === 'leader';
@@ -29,15 +30,14 @@ const CountdownTimer = () => {
   useEffect(() => {
     if (!socket) return;
 
-    // Listen to countdown initiation
     socket.on('start-countdown', ({ timerDuration: duration }) => {
+      setWaitingForNext(false);
       setIsShooting(true);
       setCount(duration);
       setSessionProgress('Get ready! 📸');
-      
-      // Setup local count tick interval
+
       if (timerRef.current) clearInterval(timerRef.current);
-      
+
       let currentTick = duration;
       timerRef.current = setInterval(() => {
         currentTick -= 1;
@@ -45,7 +45,7 @@ const CountdownTimer = () => {
           setCount(currentTick);
         } else if (currentTick === 0) {
           clearInterval(timerRef.current);
-          setCount('SMILE! 💖');
+          setCount('SMILE! 🧀');
           triggerCapture();
         }
       }, 1000);
@@ -58,14 +58,10 @@ const CountdownTimer = () => {
   }, [socket, targetIndex, photos, customization]);
 
   const triggerCapture = () => {
-    // 1. Play flash animation
     setFlashActive(true);
-    if (isLeader) {
-      socket.emit('flash-trigger');
-    }
+    if (isLeader) socket.emit('flash-trigger');
     setTimeout(() => setFlashActive(false), 800);
 
-    // 2. Perform frame capture after a tiny delay to line up with flash peak
     setTimeout(() => {
       const leaderVid = document.getElementById('leader-video-stream');
       const partnerVid = document.getElementById('partner-video-stream');
@@ -73,44 +69,32 @@ const CountdownTimer = () => {
       if (leaderVid && partnerVid) {
         const frameDataUrl = captureSplitFrame(leaderVid, partnerVid, 600, 400);
         if (frameDataUrl) {
-          // Append captured frame to photos array
           setPhotos((prev) => {
             const updated = [...prev];
             updated[targetIndex] = frameDataUrl;
 
-            // Check if all photos are captured
             const totalRequired = customization.size;
             const completedCount = updated.filter(p => p !== null && p !== undefined).length;
             const isFinished = completedCount === totalRequired;
 
             if (isFinished) {
-              setSessionProgress('All photos captured! Stitching strip... 🎉');
+              setSessionProgress('All photos captured! 🎉');
               setTimeout(() => {
                 setIsShooting(false);
-                if (isLeader) {
-                  socket.emit('strip-ready');
-                }
+                setWaitingForNext(false);
+                if (isLeader) socket.emit('strip-ready');
               }, 2000);
             } else {
-              // Find next empty photo index
+              // Find next empty slot
               let nextIndex = targetIndex + 1;
-              while (nextIndex < totalRequired && updated[nextIndex]) {
-                nextIndex++;
-              }
+              while (nextIndex < totalRequired && updated[nextIndex]) nextIndex++;
               if (nextIndex < totalRequired) {
                 setTargetIndex(nextIndex);
                 setCurrentPhotoIndex(nextIndex);
-                
-                // Show delay to let users change poses
-                setSessionProgress(`Photo ${completedCount} of ${totalRequired} saved! Prepare next pose...`);
+                setSessionProgress(`Shot ${completedCount} of ${totalRequired} done ✅`);
                 setCount(null);
-
-                // Automate next countdown if leader
-                if (isLeader) {
-                  setTimeout(() => {
-                    socket.emit('start-countdown', { timerDuration });
-                  }, 3000);
-                }
+                // No auto-trigger — wait for Creator to manually click "Next Shot"
+                setWaitingForNext(true);
               }
             }
 
@@ -121,13 +105,11 @@ const CountdownTimer = () => {
     }, 150);
   };
 
-  // Synchronize target index when photos change or retakes are triggered
+  // Sync target index on retakes
   useEffect(() => {
-    // If photos are empty, target index should be 0
     if (photos.length === 0) {
       setTargetIndex(0);
     } else {
-      // Find first empty photo slot index
       const firstEmptyIndex = photos.findIndex(p => p === null || p === undefined);
       if (firstEmptyIndex !== -1) {
         setTargetIndex(firstEmptyIndex);
@@ -137,17 +119,24 @@ const CountdownTimer = () => {
     }
   }, [photos]);
 
+  const handleNextShot = () => {
+    if (!isLeader) return;
+    socket.emit('start-countdown', { timerDuration });
+  };
+
   if (!isShooting) return null;
 
   return (
     <div className="countdown-overlay-container">
       <div className="countdown-panel glass-panel-pooky animate-pop-in">
         <div className="countdown-progress-title">
-          Photo {photos.filter(p => p).length + 1} of {customization.size}
+          Photo {photos.filter(p => p).length + (waitingForNext ? 0 : 1)} of {customization.size}
         </div>
-        
+
         <div className="countdown-number-display">
-          {count !== null ? (
+          {waitingForNext ? (
+            <span style={{ fontSize: '2.5rem' }}>😄</span>
+          ) : count !== null ? (
             <span className="count-number animate-wiggle">{count}</span>
           ) : (
             <span className="pose-timer-loader">📸 Get Ready...</span>
@@ -155,6 +144,36 @@ const CountdownTimer = () => {
         </div>
 
         <div className="countdown-status-text">{sessionProgress}</div>
+
+        {/* Between shots: Creator gets a button, Partner waits */}
+        {waitingForNext && (
+          isLeader ? (
+            <button
+              onClick={handleNextShot}
+              style={{
+                marginTop: '14px',
+                padding: '10px 22px',
+                borderRadius: '999px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #ff6b9d, #c44dff)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(196,77,255,0.4)',
+                transition: 'transform 0.15s',
+              }}
+              onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
+              onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              Next Shot 📸
+            </button>
+          ) : (
+            <p style={{ marginTop: '12px', opacity: 0.65, fontSize: '0.85rem' }}>
+              ⏳ Waiting for Creator to fire next shot...
+            </p>
+          )
+        )}
       </div>
     </div>
   );

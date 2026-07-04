@@ -18,6 +18,8 @@ const CameraView = () => {
     setTimerDuration,
     isShooting,
     setIsShooting,
+    photos,
+    currentPhotoIndex,
     step,
     setStep,
   } = useBooth();
@@ -113,8 +115,10 @@ const CameraView = () => {
               borderColor: borderStyle.borderColor,
             }}
           >
-            {/* Live Synchronized Feeds */}
-            <div className="dual-camera-frame">
+          {/* Live Synchronized Feeds + Live Strip Preview side-by-side */}
+          <div style={{ display: 'flex', gap: '10px', height: '100%' }}>
+            {/* Camera Feeds */}
+            <div className="dual-camera-frame" style={{ flex: 1 }}>
               {/* Leader's Stream (Left) */}
               <div className="camera-half">
                 <CameraStream
@@ -140,11 +144,82 @@ const CameraView = () => {
                 />
                 <div className="camera-name-tag">
                   {isLeader
-                    ? (partnerName || 'Partner 💕')
-                    : (myName || 'You 💕')}
+                    ? (partnerName ? `${partnerName} 💕` : 'Partner 💕')
+                    : (myName ? `${myName} 💕` : 'You 💕')}
                 </div>
               </div>
             </div>
+
+            {/* Live Strip Preview */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              width: '90px',
+              flexShrink: 0,
+              justifyContent: 'center',
+            }}>
+              <p style={{
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                textAlign: 'center',
+                opacity: 0.6,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                marginBottom: '2px',
+              }}>Strip Preview</p>
+              {Array.from({ length: customization.size }).map((_, i) => {
+                const photo = photos[i];
+                const isNext = !isShooting && i === currentPhotoIndex && !photo;
+                const isCurrent = isShooting && i === currentPhotoIndex;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      borderRadius: '6px',
+                      overflow: 'hidden',
+                      border: isCurrent
+                        ? '2px solid #ff6b9d'
+                        : isNext
+                        ? '2px dashed #ff6b9d'
+                        : '2px solid rgba(255,255,255,0.15)',
+                      background: photo ? 'transparent' : 'rgba(0,0,0,0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      transition: 'border 0.3s',
+                    }}
+                  >
+                    {photo ? (
+                      <img
+                        src={photo}
+                        alt={`Shot ${i + 1}`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '1rem', opacity: 0.4 }}>
+                        {isCurrent ? '📸' : isNext ? '⏳' : '♡'}
+                      </span>
+                    )}
+                    {/* Shot number badge */}
+                    <span style={{
+                      position: 'absolute',
+                      bottom: '3px',
+                      right: '4px',
+                      fontSize: '0.55rem',
+                      fontWeight: 700,
+                      color: photo ? '#fff' : 'rgba(255,255,255,0.4)',
+                      background: 'rgba(0,0,0,0.35)',
+                      borderRadius: '3px',
+                      padding: '1px 3px',
+                    }}>{i + 1}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
             {/* Simulated Frame Label footer */}
             <div className={`preview-frame-footer ${customization.font}`}>
