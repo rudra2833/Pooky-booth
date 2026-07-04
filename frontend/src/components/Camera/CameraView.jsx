@@ -168,18 +168,20 @@ const CameraView = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            width: '100px',
+            width: '80px',
             flexShrink: 0,
             justifyContent: 'center',
             background: 'rgba(255, 255, 255, 0.08)',
             border: '1.5px solid rgba(255, 255, 255, 0.15)',
             backdropFilter: 'blur(10px)',
             borderRadius: '12px',
-            padding: '12px 8px',
-            boxSizing: 'border-box'
+            padding: '10px 6px',
+            boxSizing: 'border-box',
+            alignSelf: 'center',
+            height: 'fit-content'
           }}>
             <p style={{
-              fontSize: '0.62rem',
+              fontSize: '0.58rem',
               fontWeight: 700,
               textAlign: 'center',
               opacity: 0.7,
@@ -196,9 +198,9 @@ const CameraView = () => {
                 <div
                   key={i}
                   style={{
-                    flex: 1,
-                    minHeight: '60px',
-                    borderRadius: '8px',
+                    width: '100%',
+                    aspectRatio: '3/2',
+                    borderRadius: '6px',
                     overflow: 'hidden',
                     border: isCurrent
                       ? '2px solid #ff6b9d'
