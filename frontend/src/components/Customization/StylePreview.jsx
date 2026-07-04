@@ -30,6 +30,40 @@ const StylePreview = ({ customization }) => {
   const isOcean = style === 'ocean-vibes';
   const isDarkRomance = style === 'dark-romance';
 
+  const getDecorationsForStyle = () => {
+    switch (style) {
+      case 'pink-pooky':
+      case 'pink-grid':
+        return ['💖', '✨', '💝', '✨', '💖', '✨', '💝', '💖'];
+      case 'starry-night':
+      case 'blue-grid':
+        return ['🌙', '⭐', '✨', '⭐', '🌙', '⭐', '✨', '⭐'];
+      case 'floral-garden':
+      case 'mint-grid':
+        return ['🌸', '🌿', '🌼', '🌿', '🌸', '🌿', '🌼', '🌸'];
+      case 'retro-90s':
+        return ['🔺', '🌀', '🟩', '🟡', '🔺', '🌀', '🟩', '🌀'];
+      case 'cute-kawaii':
+        return ['🐱', '🎀', '🍭', '🎀', '🐱', '🍭', '🎀', '🐱'];
+      case 'christmas-special':
+      case 'winter-snow':
+        return ['❄️', '🎄', '❄️', '⛄', '❄️', '🎄', '❄️', '❄️'];
+      case 'birthday-bash':
+        return ['🎈', '🎉', '🍰', '🎈', '🎉', '🎁', '🎈', '🎉'];
+      case 'aesthetic-purple':
+      case 'butterfly-magic':
+        return ['🦋', '✨', '💜', '✨', '🦋', '✨', '💜', '🦋'];
+      case 'cherry-blossom':
+        return ['🌸', '🌸', '💮', '🌸', '🌸', '💮', '🌸', '🌸'];
+      case 'ocean-vibes':
+        return ['🐚', '🌊', '⭐', '🌊', '🐚', '🌊', '⭐', '🐚'];
+      case 'dark-romance':
+        return ['🌹', '🥀', '🖤', '🌹', '🥀', '🖤', '🌹', '🥀'];
+      default:
+        return [];
+    }
+  };
+
   return (
     <div className="preview-container">
       <h3 className="preview-heading">Live Preview 📸</h3>
@@ -57,40 +91,9 @@ const StylePreview = ({ customization }) => {
         )}
 
         {/* Small floating decor icons in CSS to match style */}
-        {isPinkPooky && <span className="floating-decor d1">💖</span>}
-        {isPinkPooky && <span className="floating-decor d2">✨</span>}
-        {isPinkPooky && <span className="floating-decor d3">💖</span>}
-        
-        {isStarry && <span className="floating-decor d1">🌙</span>}
-        {isStarry && <span className="floating-decor d2">⭐</span>}
-        {isStarry && <span className="floating-decor d3">⭐</span>}
-
-        {isRetro90s && <span className="floating-decor d1">🔺</span>}
-        {isRetro90s && <span className="floating-decor d2">🌀</span>}
-
-        {isFloral && <span className="floating-decor d1">🌸</span>}
-        {isFloral && <span className="floating-decor d2">🌿</span>}
-
-        {isKawaii && <span className="floating-decor d1">🐱</span>}
-        {isKawaii && <span className="floating-decor d2">🎀</span>}
-
-        {isChristmas && <span className="floating-decor d1">❄️</span>}
-        {isChristmas && <span className="floating-decor d2">🎄</span>}
-
-        {isBirthday && <span className="floating-decor d1">🎈</span>}
-        {isBirthday && <span className="floating-decor d2">🎉</span>}
-
-        {isAestheticPurple && <span className="floating-decor d1">🦋</span>}
-        {isAestheticPurple && <span className="floating-decor d2">🦋</span>}
-
-        {isCherryBlossom && <span className="floating-decor d1">🌸</span>}
-        {isCherryBlossom && <span className="floating-decor d2">🌸</span>}
-
-        {isOcean && <span className="floating-decor d1">🐚</span>}
-        {isOcean && <span className="floating-decor d2">🌊</span>}
-
-        {isDarkRomance && <span className="floating-decor d1">🌹</span>}
-        {isDarkRomance && <span className="floating-decor d2">🥀</span>}
+        {getDecorationsForStyle().map((emoji, idx) => (
+          <span key={idx} className={`floating-decor d${idx + 1}`}>{emoji}</span>
+        ))}
 
         {/* Photos Grid/Column */}
         <div className={`photo-slots-container slots-${size}`}>
