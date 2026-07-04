@@ -38,7 +38,10 @@ export const BoothProvider = ({ children }) => {
     });
 
     // Advance to Camera screen when customized is ready
-    socket.on('customization-ready', () => {
+    socket.on('customization-ready', (data) => {
+      if (data && data.customization) {
+        setCustomization(data.customization);
+      }
       setPhotos([]);
       setCurrentPhotoIndex(0);
       setIsShooting(false);
@@ -119,7 +122,7 @@ export const BoothProvider = ({ children }) => {
   // Leader triggers camera screen
   const proceedToCamera = () => {
     if (socket && role === 'leader') {
-      socket.emit('customization-ready');
+      socket.emit('customization-ready', { customization });
     }
   };
 

@@ -102,10 +102,10 @@ io.on('connection', (socket) => {
   });
 
   // 5. Customization ready transition
-  socket.on('customization-ready', () => {
+  socket.on('customization-ready', (data) => {
     const roomCode = roomManager.socketToRoom.get(socket.id);
     if (roomCode) {
-      io.to(roomCode).emit('customization-ready');
+      io.to(roomCode).emit('customization-ready', data);
     }
   });
 

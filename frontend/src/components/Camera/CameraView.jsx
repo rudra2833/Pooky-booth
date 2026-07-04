@@ -204,22 +204,27 @@ const CameraView = () => {
           </div>
 
           {/* Live Strip Preview (Sits OUTSIDE the preview-frame-container) */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            width: '80px',
-            flexShrink: 0,
-            justifyContent: 'center',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1.5px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '12px',
-            padding: '10px 6px',
-            boxSizing: 'border-box',
-            alignSelf: 'center',
-            height: 'fit-content'
-          }}>
+          <div
+            className={`border-${customization.style}`}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              width: '85px',
+              flexShrink: 0,
+              justifyContent: 'center',
+              background: borderStyle.background,
+              color: borderStyle.textColor,
+              border: `2px solid ${borderStyle.borderColor}`,
+              borderRadius: '12px',
+              padding: '10px 6px',
+              boxSizing: 'border-box',
+              alignSelf: 'center',
+              height: 'fit-content',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
             <p style={{
               fontSize: '0.58rem',
               fontWeight: 700,
@@ -228,7 +233,6 @@ const CameraView = () => {
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
               marginBottom: '2px',
-              color: 'var(--color-text-dark)'
             }}>Captured</p>
             {Array.from({ length: customization.size }).map((_, i) => {
               const photo = photos[i];
@@ -243,11 +247,11 @@ const CameraView = () => {
                     borderRadius: '6px',
                     overflow: 'hidden',
                     border: isCurrent
-                      ? '2px solid #ff6b9d'
+                      ? '2.5px solid #ff6b9d'
                       : isNext
-                      ? '2px dashed #ff6b9d'
-                      : '2px solid rgba(255,255,255,0.15)',
-                    background: photo ? 'transparent' : 'rgba(0,0,0,0.3)',
+                      ? '2.5px dashed #ff6b9d'
+                      : `1.5px solid ${borderStyle.borderColor}`,
+                    background: photo ? 'transparent' : 'rgba(0,0,0,0.08)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
