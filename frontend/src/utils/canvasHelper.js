@@ -33,36 +33,48 @@ export const captureSplitFrame = (leaderVideo, partnerVideo, width = 600, height
     const vWidth = video.videoWidth || 640;
     const vHeight = video.videoHeight || 480;
 
+    // Calculate source crop to match destination 3:4 aspect ratio centered (object-fit: cover behavior)
+    const targetAspect = halfWidth / height; // 300/400 = 0.75
+    const videoAspect = vWidth / vHeight;
+
+    let sWidth, sHeight, sx, sy;
+
+    if (videoAspect > targetAspect) {
+      // Video is wider than 3:4 (standard landscape camera)
+      sHeight = vHeight;
+      sWidth = vHeight * targetAspect;
+      sx = (vWidth - sWidth) / 2;
+      sy = 0;
+    } else {
+      // Video is taller than 3:4
+      sWidth = vWidth;
+      sHeight = vWidth / targetAspect;
+      sx = 0;
+      sy = (vHeight - sHeight) / 2;
+    }
+
     ctx.save();
 
     if (isLeft) {
       // LEADER (Left Half of canvas)
-      // Standard source crop: left half of the video feed.
-      // To mirror it, we translate context, flip coordinates horizontally, and draw.
+      // Mirror the feed
       ctx.translate(halfWidth, 0);
       ctx.scale(-1, 1);
 
-      // Draw the cropped left half of video onto the flipped left half of canvas
-      // Source: X=0, Y=0, W=vWidth/2, H=vHeight
-      // Destination: X=0, Y=0, W=halfWidth, H=height
       ctx.drawImage(
         video,
-        0, 0, vWidth / 2, vHeight,
+        sx, sy, sWidth, sHeight,
         0, 0, halfWidth, height
       );
     } else {
       // PARTNER (Right Half of canvas)
-      // Source crop: right half of video feed.
-      // To mirror it, we translate context, flip coordinates horizontally, and draw.
+      // Mirror the feed
       ctx.translate(width, 0);
       ctx.scale(-1, 1);
 
-      // Draw cropped right half of video onto flipped right half of canvas
-      // Source: X=vWidth/2, Y=0, W=vWidth/2, H=vHeight
-      // Destination: X=0, Y=0, W=halfWidth, H=height
       ctx.drawImage(
         video,
-        vWidth / 2, 0, vWidth / 2, vHeight,
+        sx, sy, sWidth, sHeight,
         0, 0, halfWidth, height
       );
     }

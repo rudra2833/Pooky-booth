@@ -104,10 +104,10 @@ const RoomHome = () => {
               disabled={leaderNameInput.trim().length === 0}
               className="w-full"
             >
-              Create Room 🎈
+              Create Room 
             </Button>
             <Button onClick={handleBackToLobby} variant="outline" className="w-full">
-              Go Back ⬅️
+              Go Back 
             </Button>
           </div>
         </form>
@@ -141,7 +141,7 @@ const RoomHome = () => {
         </div>
         <p className="pulsing-dots" style={{ marginTop: '8px' }}>Hang tight...</p>
         <Button onClick={handleBackToLobby} variant="outline" size="sm" style={{ marginTop: '20px' }}>
-          Leave Room 🚪
+          Leave Room
         </Button>
       </div>
     );
@@ -168,7 +168,7 @@ const RoomHome = () => {
             gap: '12px',
           }}
         >
-          <span>👋 {disconnectMessage}</span>
+          <span> {disconnectMessage}</span>
           <button
             onClick={handleDismissDisconnect}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}
@@ -188,15 +188,15 @@ const RoomHome = () => {
 
       <div className="lobby-actions">
         <Button onClick={handleCreateRoom} variant="primary" size="lg" className="w-full">
-          Create Room 🆕
+          Create Room 
         </Button>
         <Button onClick={handleJoinRoom} variant="secondary" size="lg" className="w-full">
-          Join Room 🔑
+          Join Room 
         </Button>
       </div>
 
       <div className="lobby-footer text-xs font-semibold">
-        <p>⚡ Powered by WebRTC &amp; Socket.io for lag-free real-time connection</p>
+        <p> Created by Rudra Patel for her cut LOVE 💝</p>
       </div>
     </div>
   );
