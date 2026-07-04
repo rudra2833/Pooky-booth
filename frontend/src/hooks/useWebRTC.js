@@ -1,162 +1,191 @@
-import { useState, useEffect, useRef } from 'react';
-import Peer from 'simple-peer';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
+/**
+ * useWebRTC - Direct RTCPeerConnection implementation.
+ * Replaces simple-peer entirely to fix:
+ *   - P2P Error on localhost (same-machine tabs)
+ *   - Buffer is not defined crashes
+ *   - Unified-plan / loopback ICE failures
+ */
 export const useWebRTC = (socket, role, localStream, partnerConnected) => {
   const [remoteStream, setRemoteStream] = useState(null);
-  const [rtcStatus, setRtcStatus] = useState('disconnected'); // 'disconnected' | 'connecting' | 'connected' | 'error'
+  const [rtcStatus, setRtcStatus] = useState('disconnected');
   const [rtcError, setRtcError] = useState(null);
 
-  const peerRef = useRef(null);
-  const pendingSignals = useRef([]);
+  const pcRef = useRef(null);
+  const pendingCandidates = useRef([]);
+  const remoteDescSet = useRef(false);
 
-  // 1. Independent Socket signaling listener to capture early signals
-  useEffect(() => {
-    if (!socket) return;
+  const iceServers = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+  ];
 
-    const handleSignalMessage = (signalData) => {
-      console.log('Socket received remote signaling data');
-      if (peerRef.current && !peerRef.current.destroyed) {
-        try {
-          peerRef.current.signal(signalData);
-        } catch (err) {
-          console.error('Error signaling peer directly:', err);
-        }
-      } else {
-        console.log('Peer connection not fully initialized yet. Queuing signal.');
-        pendingSignals.current.push(signalData);
+  const destroyPeer = useCallback(() => {
+    if (pcRef.current) {
+      pcRef.current.onicecandidate = null;
+      pcRef.current.ontrack = null;
+      pcRef.current.onconnectionstatechange = null;
+      pcRef.current.close();
+      pcRef.current = null;
+    }
+    pendingCandidates.current = [];
+    remoteDescSet.current = false;
+  }, []);
+
+  // Apply any buffered ICE candidates once remote description is set
+  const flushCandidates = useCallback(async () => {
+    if (!pcRef.current || !remoteDescSet.current) return;
+    while (pendingCandidates.current.length > 0) {
+      const candidate = pendingCandidates.current.shift();
+      try {
+        await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (e) {
+        console.warn('Failed to add buffered ICE candidate:', e);
       }
-    };
+    }
+  }, []);
 
-    socket.on('signal', handleSignalMessage);
-    return () => {
-      console.log('Cleaning up WebRTC signaling socket listener');
-      socket.off('signal', handleSignalMessage);
-    };
-  }, [socket]);
-
-  // 2. Peer connection setup lifecycle
+  // Main setup effect
   useEffect(() => {
-    // We only initiate WebRTC setup if socket is active, the partner is connected,
-    // and we have a local stream from the user.
     if (!socket || !partnerConnected || !localStream) {
-      // Cleanup WebRTC connection if requirements are no longer met
-      if (peerRef.current) {
-        console.log('Cleaning up WebRTC peer connection due to missing stream/socket/partner');
-        peerRef.current.destroy();
-        peerRef.current = null;
-      }
+      destroyPeer();
       setRemoteStream(null);
       setRtcStatus('disconnected');
       return;
     }
 
-    console.log(`Setting up WebRTC connection. Role: ${role}, Socket ID: ${socket.id}`);
+    const isLeader = role === 'leader';
+    console.log(`[WebRTC] Setting up as ${isLeader ? 'LEADER (offerer)' : 'PARTNER (answerer)'}`);
     setRtcStatus('connecting');
+    setRtcError(null);
 
-    try {
-      const isLeader = role === 'leader';
+    // Create RTCPeerConnection
+    const pc = new RTCPeerConnection({
+      iceServers,
+      iceTransportPolicy: 'all',
+      bundlePolicy: 'max-bundle',
+      rtcpMuxPolicy: 'require',
+    });
+    pcRef.current = pc;
 
-      // Create a new simple-peer instance
-      // ICE servers: multiple STUN + free public TURN relays
-      // TURN servers are critical for users on the same Wi-Fi NAT or behind firewalls
-      const iceServers = [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
-        // Free TURN relay (open-relay.metered.ca) - works reliably for photo booth use
-        {
-          urls: 'turn:openrelay.metered.ca:80',
-          username: 'openrelayproject',
-          credential: 'openrelayproject',
-        },
-        {
-          urls: 'turn:openrelay.metered.ca:443',
-          username: 'openrelayproject',
-          credential: 'openrelayproject',
-        },
-        {
-          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-          username: 'openrelayproject',
-          credential: 'openrelayproject',
-        },
-      ];
+    // Add local tracks
+    localStream.getTracks().forEach((track) => {
+      pc.addTrack(track, localStream);
+    });
 
-      const peer = new Peer({
-        initiator: isLeader,
-        trickle: true,
-        stream: localStream,
-        config: { iceServers },
-      });
+    // Receive remote stream
+    pc.ontrack = (event) => {
+      console.log('[WebRTC] Remote track received');
+      setRemoteStream(event.streams[0]);
+      setRtcStatus('connected');
+    };
 
-      peerRef.current = peer;
-
-      // Process any early signals that arrived before the webcam finished initializing
-      if (pendingSignals.current.length > 0) {
-        console.log(`Applying ${pendingSignals.current.length} queued signaling packets to new peer`);
-        pendingSignals.current.forEach((sig) => {
-          try {
-            peer.signal(sig);
-          } catch (e) {
-            console.error('Error applying queued signal:', e);
-          }
-        });
-        pendingSignals.current = [];
+    // Send ICE candidates to peer via socket
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log('[WebRTC] Sending ICE candidate');
+        socket.emit('signal', { type: 'candidate', candidate: event.candidate });
       }
+    };
 
-      // Handle signal events generated by this peer
-      peer.on('signal', (signalData) => {
-        console.log('Local WebRTC signal generated, sending via socket...');
-        socket.emit('signal', signalData);
-      });
-
-      // Handle remote stream event
-      peer.on('stream', (stream) => {
-        console.log('Received remote media stream!');
-        setRemoteStream(stream);
+    pc.onconnectionstatechange = () => {
+      const state = pc.connectionState;
+      console.log('[WebRTC] Connection state:', state);
+      if (state === 'connected') {
         setRtcStatus('connected');
         setRtcError(null);
-      });
-
-      // Handle connection status events
-      peer.on('connect', () => {
-        console.log('WebRTC Peer connected successfully!');
-        setRtcStatus('connected');
-      });
-
-      peer.on('error', (err) => {
-        console.error('WebRTC Peer connection error:', err);
+      } else if (state === 'failed' || state === 'disconnected' || state === 'closed') {
         setRtcStatus('error');
-        setRtcError(`P2P Connection Error: ${err.message}`);
-      });
+        setRtcError(`WebRTC connection ${state}`);
+      }
+    };
 
-      peer.on('close', () => {
-        console.log('WebRTC Peer connection closed');
-        setRtcStatus('disconnected');
-        setRemoteStream(null);
-      });
+    pc.onicegatheringstatechange = () => {
+      console.log('[WebRTC] ICE gathering state:', pc.iceGatheringState);
+    };
 
-      // Clean up on component unmount or state changes
-      return () => {
-        console.log('Cleaning up WebRTC peer');
-        if (peerRef.current) {
-          peerRef.current.destroy();
-          peerRef.current = null;
+    // Handle incoming signals from socket
+    const handleSignal = async (data) => {
+      if (!pcRef.current) return;
+      try {
+        if (data.type === 'offer') {
+          console.log('[WebRTC] Received offer, setting remote desc and sending answer');
+          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data));
+          remoteDescSet.current = true;
+          await flushCandidates();
+          const answer = await pcRef.current.createAnswer();
+          await pcRef.current.setLocalDescription(answer);
+          socket.emit('signal', pcRef.current.localDescription);
+
+        } else if (data.type === 'answer') {
+          console.log('[WebRTC] Received answer, setting remote desc');
+          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data));
+          remoteDescSet.current = true;
+          await flushCandidates();
+
+        } else if (data.type === 'candidate') {
+          if (remoteDescSet.current) {
+            await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+          } else {
+            console.log('[WebRTC] Buffering ICE candidate (no remote desc yet)');
+            pendingCandidates.current.push(data.candidate);
+          }
         }
-        setRemoteStream(null);
-        setRtcStatus('disconnected');
-      };
-    } catch (err) {
-      console.error('Failed to create SimplePeer:', err);
-      setRtcStatus('error');
-      setRtcError(`Failed to initialize WebRTC: ${err.message}`);
-    }
-  }, [socket, role, localStream, partnerConnected]);
+      } catch (err) {
+        console.error('[WebRTC] Signal handling error:', err);
+        setRtcStatus('error');
+        setRtcError(err.message);
+      }
+    };
 
-  return {
-    remoteStream,
-    rtcStatus,
-    rtcError,
-  };
+    socket.on('signal', handleSignal);
+
+    // Leader creates and sends the offer
+    if (isLeader) {
+      (async () => {
+        try {
+          console.log('[WebRTC] Creating offer...');
+          const offer = await pc.createOffer({
+            offerToReceiveVideo: true,
+            offerToReceiveAudio: false,
+          });
+          await pc.setLocalDescription(offer);
+          socket.emit('signal', pc.localDescription);
+          console.log('[WebRTC] Offer sent');
+        } catch (err) {
+          console.error('[WebRTC] Failed to create offer:', err);
+          setRtcStatus('error');
+          setRtcError(err.message);
+        }
+      })();
+    }
+
+    return () => {
+      console.log('[WebRTC] Cleanup');
+      socket.off('signal', handleSignal);
+      destroyPeer();
+      setRemoteStream(null);
+      setRtcStatus('disconnected');
+    };
+  }, [socket, role, localStream, partnerConnected, destroyPeer, flushCandidates]);
+
+  return { remoteStream, rtcStatus, rtcError };
 };

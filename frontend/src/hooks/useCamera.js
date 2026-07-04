@@ -12,16 +12,39 @@ export const useCamera = () => {
     try {
       // Return existing stream if already initialized to avoid duplicate prompts
       if (streamRef.current) {
+        setIsCameraLoading(false);
         return streamRef.current;
       }
 
+      // Enumerate all video devices and pick the FIRST real camera by deviceId.
+      // This prevents the second tab from grabbing a virtual camera (OBS, Teams, etc.)
+      // when the main webcam is already held by another tab.
+      let deviceId = null;
+      try {
+        // Request permission first so labels are visible
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(
+          (d) => d.kind === 'videoinput' &&
+          // Filter out obvious virtual cameras by label
+          !d.label.toLowerCase().includes('virtual') &&
+          !d.label.toLowerCase().includes('obs') &&
+          !d.label.toLowerCase().includes('snap') &&
+          !d.label.toLowerCase().includes('droidcam') &&
+          !d.label.toLowerCase().includes('iriun')
+        );
+        if (videoDevices.length > 0) {
+          deviceId = videoDevices[0].deviceId;
+        }
+      } catch (_) {
+        // Enumeration failed, proceed without deviceId
+      }
+
       const constraints = {
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: 'user', // Selfie mirror mode
-        },
-        audio: false, // No audio needed for photo booth
+        video: deviceId
+          ? { deviceId: { exact: deviceId }, width: { ideal: 640 }, height: { ideal: 480 } }
+          : { width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false,
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
