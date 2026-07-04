@@ -8,7 +8,7 @@ import './Room.css';
 const RoomHome = () => {
   // Local screen modes: 'lobby' | 'create' | 'join'
   const [localMode, setLocalMode] = useState('lobby');
-  const { createRoom, resetRoom, connectionStatus } = useRoom();
+  const { createRoom, resetRoom, connectionStatus, role, partnerConnected, roomCode } = useRoom();
 
   // Reset room context when returning to lobby
   useEffect(() => {
@@ -23,7 +23,11 @@ const RoomHome = () => {
     if (connectionStatus === 'waiting' && localMode === 'lobby') {
       setLocalMode('create');
     }
-  }, [connectionStatus, localMode]);
+    // When partner successfully joins, transition from join form to the waiting screen
+    if (connectionStatus === 'connected' && role === 'partner' && localMode === 'join') {
+      setLocalMode('partner-waiting');
+    }
+  }, [connectionStatus, localMode, role]);
 
   const handleCreateRoom = () => {
     setLocalMode('create');
@@ -44,6 +48,30 @@ const RoomHome = () => {
 
   if (localMode === 'join') {
     return <JoinRoom onBack={handleBackToLobby} />;
+  }
+
+  // Partner waiting screen — shown after partner successfully joins the room
+  if (localMode === 'partner-waiting') {
+    return (
+      <div className="room-card glass-panel-pooky animate-pop-in text-center">
+        <div className="lobby-mascot animate-float">🎀</div>
+        <div className="room-card-header">
+          <h2 className="title-cute">You're In! 🎉</h2>
+          <p className="subtitle-cute">Room <b>{roomCode}</b></p>
+          <p style={{ marginTop: '12px', opacity: 0.7 }}>
+            Waiting for your partner to set up the photo strip style...
+          </p>
+        </div>
+        <div className="status-indicator connected animate-pulse-soft" style={{ justifyContent: 'center', margin: '16px 0' }}>
+          <span className="dot bg-connected"></span>
+          <span className="status-text font-bold">Connected to room ✨</span>
+        </div>
+        <p className="pulsing-dots" style={{ marginTop: '8px' }}>Hang tight...</p>
+        <Button onClick={handleBackToLobby} variant="outline" size="sm" style={{ marginTop: '20px' }}>
+          Leave Room 🚪
+        </Button>
+      </div>
+    );
   }
 
   return (
