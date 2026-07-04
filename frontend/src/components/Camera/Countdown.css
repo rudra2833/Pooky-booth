@@ -4,34 +4,38 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(71, 60, 79, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: transparent;
+  backdrop-filter: none;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 2000;
   padding: 20px;
+  pointer-events: none;
 }
 
 .countdown-panel {
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 40px !important;
+  gap: 10px;
+  padding: 20px !important;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(71, 60, 79, 0.25);
+  margin-bottom: 10px;
 }
 
 .countdown-progress-title {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   color: var(--color-pink-dark);
   text-shadow: 1px 1px 0px var(--color-text-dark);
 }
 
 .countdown-number-display {
-  height: 160px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,20 +43,20 @@
 
 .count-number {
   font-family: var(--font-display);
-  font-size: 6rem;
+  font-size: 3.8rem;
   color: var(--color-text-dark);
-  text-shadow: 4px 4px 0px var(--color-yellow);
+  text-shadow: 3px 3px 0px var(--color-yellow);
 }
 
 .pose-timer-loader {
   font-family: var(--font-display);
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   color: var(--color-text-dark);
 }
 
 .countdown-status-text {
   font-family: var(--font-body);
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #7b6f84;
 }
