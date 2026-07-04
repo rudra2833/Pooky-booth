@@ -120,13 +120,13 @@ const CameraView = () => {
                 <CameraStream
                   stream={leaderStream}
                   id="leader-video-stream"
-                  label={isLeader ? 'YOU (LEADER)' : 'PARTNER (LEADER)'}
+                  label={isLeader ? 'YOU (CREATOR)' : 'PARTNER (CREATOR)'}
                   isLocal={isLeader}
                 />
                 <div className="camera-name-tag">
                   {isLeader
-                    ? (myName || 'You 👑')
-                    : (partnerName || 'Partner 👑')}
+                    ? (myName ? `${myName} 🎬` : 'You 🎬')
+                    : (partnerName ? `${partnerName} 🎬` : 'Creator 🎬')}
                 </div>
               </div>
 
@@ -221,7 +221,7 @@ const CameraView = () => {
             ) : (
               <div className="partner-waiting-prompt">
                 <span className="spin-icon animate-pulse-soft">💖</span>
-                <p>Waiting for Room Leader to click SHOOT...</p>
+                <p>Waiting for Creator to click SHOOT...</p>
               </div>
             )}
           </div>
