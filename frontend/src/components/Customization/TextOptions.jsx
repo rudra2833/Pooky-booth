@@ -22,7 +22,7 @@ const TextOptions = ({ customization, onChange, disabled = false }) => {
 
   return (
     <div className="picker-section">
-      <h3 className="section-title">3. Text & Date Options 📝</h3>
+      <h3 className="section-title">3. Text & Date Options</h3>
 
       <div className="layout-sub-group">
         <div className="toggle-container" onClick={handleToggleDate}>

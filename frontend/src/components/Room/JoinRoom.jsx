@@ -28,14 +28,14 @@ const JoinRoom = ({ onBack }) => {
   return (
     <div className="room-card glass-panel-pooky animate-pop-in">
       <div className="room-card-header">
-        <h2 className="title-cute">Join Partner 👯‍♀️</h2>
+        <h2 className="title-cute">Join Partner ✨</h2>
         <p className="subtitle-cute">Enter your name and the 6-digit room code.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="room-form">
 
         <div className="input-group">
-          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Your Name 💕</label>
+          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Your Name</label>
           <input
             type="text"
             value={name}
@@ -49,7 +49,7 @@ const JoinRoom = ({ onBack }) => {
         </div>
 
         <div className="input-group" style={{ marginTop: '12px' }}>
-          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Room Code 🔑</label>
+          <label className="picker-label" style={{ marginBottom: '6px', display: 'block' }}>Room Code</label>
           <input
             type="text"
             value={code}
@@ -72,11 +72,12 @@ const JoinRoom = ({ onBack }) => {
               variant="secondary"
               disabled={code.length !== 6 || name.trim().length === 0 || isLoading}
               className="w-full"
+              style={{marginTop: '12px' }}
             >
-              Connect Now ✨
+              Connect Now
             </Button>
             <Button onClick={onBack} variant="outline" className="w-full">
-              Go Back ⬅️
+              Go Back
             </Button>
           </div>
         )}

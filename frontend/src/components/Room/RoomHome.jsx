@@ -182,7 +182,7 @@ const RoomHome = () => {
 
         <p className="lobby-description">
           Miles apart, but matching smiles. Here's to capturing beautiful moments together,
-          because every second with you is a memory I want to keep forever, my sweet Sani. 🎀
+          because every second with you is a memory I want to keep forever, <strong style={{ color: 'var(--color-pink-dark)' }}>my sweet Sani</strong>. 🎀
         </p>
       </div>
 
@@ -196,7 +196,7 @@ const RoomHome = () => {
       </div>
 
       <div className="lobby-footer text-xs font-semibold">
-        <p> Created by Rudra Patel for her cut LOVE 💝</p>
+        <p> Created by Rudra Patel for her cute LOVE 💝</p>
       </div>
     </div>
   );
