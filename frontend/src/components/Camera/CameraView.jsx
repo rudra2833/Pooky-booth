@@ -105,20 +105,23 @@ const CameraView = () => {
       </div>
 
       <div className="camera-main-layout">
-        {/* Left Column: Webcam Feeds styled inside the border preview frame */}
-        <div className="camera-feeds-panel">
+        {/* Left Column: Webcam Feeds styled inside the border preview frame + Live Strip Preview side-by-side */}
+        <div className="camera-feeds-panel" style={{ display: 'flex', gap: '16px', alignItems: 'stretch', width: '100%', maxWidth: '700px', margin: '0 auto' }}>
           <div
             className="preview-frame-container"
             style={{
               background: borderStyle.background,
               color: borderStyle.textColor,
               borderColor: borderStyle.borderColor,
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              boxSizing: 'border-box'
             }}
           >
-          {/* Live Synchronized Feeds + Live Strip Preview side-by-side */}
-          <div style={{ display: 'flex', gap: '10px', height: '100%' }}>
-            {/* Camera Feeds */}
-            <div className="dual-camera-frame" style={{ flex: 1 }}>
+            {/* Live Synchronized Feeds */}
+            <div className="dual-camera-frame" style={{ width: '100%', boxSizing: 'border-box' }}>
               {/* Leader's Stream (Left) */}
               <div className="camera-half">
                 <CameraStream
@@ -150,85 +153,92 @@ const CameraView = () => {
               </div>
             </div>
 
-            {/* Live Strip Preview */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-              width: '90px',
-              flexShrink: 0,
-              justifyContent: 'center',
-            }}>
-              <p style={{
-                fontSize: '0.6rem',
-                fontWeight: 700,
-                textAlign: 'center',
-                opacity: 0.6,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                marginBottom: '2px',
-              }}>Strip Preview</p>
-              {Array.from({ length: customization.size }).map((_, i) => {
-                const photo = photos[i];
-                const isNext = !isShooting && i === currentPhotoIndex && !photo;
-                const isCurrent = isShooting && i === currentPhotoIndex;
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      flex: 1,
-                      borderRadius: '6px',
-                      overflow: 'hidden',
-                      border: isCurrent
-                        ? '2px solid #ff6b9d'
-                        : isNext
-                        ? '2px dashed #ff6b9d'
-                        : '2px solid rgba(255,255,255,0.15)',
-                      background: photo ? 'transparent' : 'rgba(0,0,0,0.25)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      transition: 'border 0.3s',
-                    }}
-                  >
-                    {photo ? (
-                      <img
-                        src={photo}
-                        alt={`Shot ${i + 1}`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <span style={{ fontSize: '1rem', opacity: 0.4 }}>
-                        {isCurrent ? '📸' : isNext ? '⏳' : '♡'}
-                      </span>
-                    )}
-                    {/* Shot number badge */}
-                    <span style={{
-                      position: 'absolute',
-                      bottom: '3px',
-                      right: '4px',
-                      fontSize: '0.55rem',
-                      fontWeight: 700,
-                      color: photo ? '#fff' : 'rgba(255,255,255,0.4)',
-                      background: 'rgba(0,0,0,0.35)',
-                      borderRadius: '3px',
-                      padding: '1px 3px',
-                    }}>{i + 1}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
             {/* Simulated Frame Label footer */}
-            <div className={`preview-frame-footer ${customization.font}`}>
+            <div className={`preview-frame-footer ${customization.font}`} style={{ marginTop: 'auto', padding: '10px 0 0 0' }}>
               {customization.text ? (
                 <p className="frame-footer-text">{customization.text}</p>
               ) : (
                 <p className="frame-footer-text placeholder-text">Pooky Memories 💖</p>
               )}
             </div>
+          </div>
+
+          {/* Live Strip Preview (Sits OUTSIDE the preview-frame-container) */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            width: '100px',
+            flexShrink: 0,
+            justifyContent: 'center',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1.5px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '12px',
+            padding: '12px 8px',
+            boxSizing: 'border-box'
+          }}>
+            <p style={{
+              fontSize: '0.62rem',
+              fontWeight: 700,
+              textAlign: 'center',
+              opacity: 0.7,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              marginBottom: '2px',
+              color: 'var(--color-text-dark)'
+            }}>Captured</p>
+            {Array.from({ length: customization.size }).map((_, i) => {
+              const photo = photos[i];
+              const isNext = !isShooting && i === currentPhotoIndex && !photo;
+              const isCurrent = isShooting && i === currentPhotoIndex;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    minHeight: '60px',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: isCurrent
+                      ? '2px solid #ff6b9d'
+                      : isNext
+                      ? '2px dashed #ff6b9d'
+                      : '2px solid rgba(255,255,255,0.15)',
+                    background: photo ? 'transparent' : 'rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    transition: 'border 0.3s',
+                  }}
+                >
+                  {photo ? (
+                    <img
+                      src={photo}
+                      alt={`Shot ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '1.1rem', opacity: 0.5 }}>
+                      {isCurrent ? '📸' : isNext ? '⏳' : '♡'}
+                    </span>
+                  )}
+                  {/* Shot number badge */}
+                  <span style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    right: '4px',
+                    fontSize: '0.6rem',
+                    fontWeight: 700,
+                    color: photo ? '#fff' : 'rgba(255,255,255,0.5)',
+                    background: 'rgba(0,0,0,0.4)',
+                    borderRadius: '4px',
+                    padding: '2px 4px',
+                  }}>{i + 1}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
