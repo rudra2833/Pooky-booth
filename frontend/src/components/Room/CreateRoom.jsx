@@ -7,7 +7,7 @@ import './Room.css';
 
 const CreateRoom = ({ onBack }) => {
   const { roomCode, partnerConnected, myName, partnerName } = useRoom();
-  const { setStep } = useBooth();
+  const { startCustomization } = useBooth();
   const [copied, setCopied] = useState(false);
 
   const copyCode = () => {
@@ -18,7 +18,7 @@ const CreateRoom = ({ onBack }) => {
   };
 
   const handleStartCustomization = () => {
-    setStep('customizer');
+    startCustomization();
   };
 
   return (

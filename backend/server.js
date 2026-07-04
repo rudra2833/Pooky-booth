@@ -84,6 +84,13 @@ io.on('connection', (socket) => {
   });
 
   // 4. Customization update sync (from Leader to Partner)
+  socket.on('start-customization', () => {
+    const roomCode = roomManager.socketToRoom.get(socket.id);
+    if (roomCode) {
+      io.to(roomCode).emit('start-customization');
+    }
+  });
+
   socket.on('customization-update', (config) => {
     const roomCode = roomManager.socketToRoom.get(socket.id);
     if (roomCode) {

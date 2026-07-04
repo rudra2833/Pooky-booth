@@ -18,14 +18,14 @@ const StylePreview = ({ customization }) => {
 
   // Check if we need special decorative elements in the HTML preview
   const isVintageFilm = style === 'vintage-film';
-  const isPinkPooky = style === 'pink-pooky';
+  const isPinkPooky = style === 'pink-pooky' || style === 'pink-grid';
   const isRetro90s = style === 'retro-90s';
-  const isFloral = style === 'floral-garden';
-  const isStarry = style === 'starry-night';
+  const isFloral = style === 'floral-garden' || style === 'mint-grid';
+  const isStarry = style === 'starry-night' || style === 'blue-grid';
   const isKawaii = style === 'cute-kawaii';
-  const isChristmas = style === 'christmas-special';
+  const isChristmas = style === 'christmas-special' || style === 'winter-snow';
   const isBirthday = style === 'birthday-bash';
-  const isAestheticPurple = style === 'aesthetic-purple';
+  const isAestheticPurple = style === 'aesthetic-purple' || style === 'butterfly-magic';
   const isCherryBlossom = style === 'cherry-blossom';
   const isOcean = style === 'ocean-vibes';
   const isDarkRomance = style === 'dark-romance';

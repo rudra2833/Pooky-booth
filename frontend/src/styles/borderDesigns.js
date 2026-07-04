@@ -13,6 +13,46 @@ const drawHeart = (ctx, x, y, size, color) => {
   ctx.restore();
 };
 
+// Helper to draw a real butterfly on canvas
+const drawButterfly = (ctx, x, y, size, color) => {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.translate(x, y);
+  ctx.beginPath();
+  // Upper left wing
+  ctx.bezierCurveTo(-size/8, -size/8, -size, -size, -size, -size/2);
+  ctx.bezierCurveTo(-size, 0, -size/4, 0, 0, 0);
+  // Lower left wing
+  ctx.bezierCurveTo(-size/8, size/8, -size*0.7, size*0.7, -size*0.6, size*0.3);
+  ctx.bezierCurveTo(-size*0.5, 0, -size/4, 0, 0, 0);
+  // Upper right wing
+  ctx.bezierCurveTo(size/8, -size/8, size, -size, size, -size/2);
+  ctx.bezierCurveTo(size, 0, size/4, 0, 0, 0);
+  // Lower right wing
+  ctx.bezierCurveTo(size/8, size/8, size*0.7, size*0.7, size*0.6, size*0.3);
+  ctx.bezierCurveTo(size*0.5, 0, size/4, 0, 0, 0);
+  ctx.fill();
+  ctx.restore();
+};
+
+// Helper to draw a grid pattern background
+const drawGridPattern = (ctx, w, h, size, color) => {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 0; x <= w; x += size) {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+  }
+  for (let y = 0; y <= h; y += size) {
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+};
+
 // Helper to draw a star shape on canvas
 const drawStar = (ctx, cx, cy, spikes, outerRadius, innerRadius, color) => {
   let rot = (Math.PI / 2) * 3;
@@ -101,6 +141,111 @@ export const BORDER_DESIGNS = {
       // Draw sub-borders around each photo frame
       ctx.strokeStyle = '#cccccc';
       ctx.lineWidth = 1;
+      photoRects.forEach(r => {
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      });
+    }
+  },
+  'pink-grid': {
+    name: 'Pink Grid 🍥',
+    class: 'border-pink-grid',
+    background: '#ffeef2',
+    textColor: '#ff6b9d',
+    borderColor: '#ffccd8',
+    drawBorder: (ctx, w, h, photoRects) => {
+      ctx.fillStyle = '#ffeef2';
+      ctx.fillRect(0, 0, w, h);
+      drawGridPattern(ctx, w, h, 20, 'rgba(255, 107, 157, 0.15)');
+      for (let y = 30; y < h; y += 120) {
+        drawHeart(ctx, 22, y, 8, '#ff6b9d');
+        drawHeart(ctx, w - 22, y + 60, 6, '#ff9ebb');
+      }
+      ctx.strokeStyle = '#ffccd8';
+      ctx.lineWidth = 3;
+      photoRects.forEach(r => {
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      });
+    }
+  },
+  'blue-grid': {
+    name: 'Blue Grid 💙',
+    class: 'border-blue-grid',
+    background: '#f0f9ff',
+    textColor: '#0284c7',
+    borderColor: '#bae6fd',
+    drawBorder: (ctx, w, h, photoRects) => {
+      ctx.fillStyle = '#f0f9ff';
+      ctx.fillRect(0, 0, w, h);
+      drawGridPattern(ctx, w, h, 20, 'rgba(14, 165, 233, 0.12)');
+      for (let y = 30; y < h; y += 100) {
+        drawStar(ctx, 20, y, 4, 6, 2.5, '#0284c7');
+        drawStar(ctx, w - 20, y + 50, 4, 5, 2, '#38bdf8');
+      }
+      ctx.strokeStyle = '#bae6fd';
+      ctx.lineWidth = 3;
+      photoRects.forEach(r => {
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      });
+    }
+  },
+  'mint-grid': {
+    name: 'Mint Grid 🌿',
+    class: 'border-mint-grid',
+    background: '#f0fdf4',
+    textColor: '#16a34a',
+    borderColor: '#bbf7d0',
+    drawBorder: (ctx, w, h, photoRects) => {
+      ctx.fillStyle = '#f0fdf4';
+      ctx.fillRect(0, 0, w, h);
+      drawGridPattern(ctx, w, h, 20, 'rgba(22, 163, 74, 0.08)');
+      for (let y = 40; y < h; y += 120) {
+        drawFlower5Petal(ctx, 20, y, 6, '#86efac', '#eab308');
+        drawFlower5Petal(ctx, w - 20, y + 60, 6, '#ffffff', '#eab308');
+      }
+      ctx.strokeStyle = '#bbf7d0';
+      ctx.lineWidth = 3;
+      photoRects.forEach(r => {
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      });
+    }
+  },
+  'butterfly-magic': {
+    name: 'Butterfly Magic 🦋',
+    class: 'border-butterfly-magic',
+    background: '#faf5ff',
+    textColor: '#9333ea',
+    borderColor: '#e9d5ff',
+    drawBorder: (ctx, w, h, photoRects) => {
+      ctx.fillStyle = '#faf5ff';
+      ctx.fillRect(0, 0, w, h);
+      drawGridPattern(ctx, w, h, 20, 'rgba(147, 51, 234, 0.08)');
+      for (let y = 40; y < h; y += 120) {
+        drawButterfly(ctx, 20, y, 8, '#c084fc');
+        drawButterfly(ctx, w - 20, y + 60, 6, '#d8b4fe');
+      }
+      ctx.strokeStyle = '#e9d5ff';
+      ctx.lineWidth = 3;
+      photoRects.forEach(r => {
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      });
+    }
+  },
+  'winter-snow': {
+    name: 'Winter Snow ❄️',
+    class: 'border-winter-snow',
+    background: '#f0f9ff',
+    textColor: '#0369a1',
+    borderColor: '#e0f2fe',
+    drawBorder: (ctx, w, h, photoRects) => {
+      ctx.fillStyle = '#f0f9ff';
+      ctx.fillRect(0, 0, w, h);
+      drawGridPattern(ctx, w, h, 20, 'rgba(3, 105, 161, 0.06)');
+      for (let y = 30; y < h; y += 90) {
+        drawSnowflake(ctx, 20, y, 6, '#0284c7');
+        drawSnowflake(ctx, w - 20, y + 45, 6, '#38bdf8');
+      }
+      ctx.strokeStyle = '#e0f2fe';
+      ctx.lineWidth = 3;
       photoRects.forEach(r => {
         ctx.strokeRect(r.x, r.y, r.w, r.h);
       });

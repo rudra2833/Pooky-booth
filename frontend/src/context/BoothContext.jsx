@@ -78,11 +78,16 @@ export const BoothProvider = ({ children }) => {
       }
     });
 
+    socket.on('start-customization', () => {
+      setStep('customizer');
+    });
+
     socket.on('strip-ready', () => {
       setStep('preview');
     });
 
     return () => {
+      socket.off('start-customization');
       socket.off('customization-update');
       socket.off('customization-ready');
       socket.off('flash-trigger');
@@ -101,6 +106,14 @@ export const BoothProvider = ({ children }) => {
       }
       return next;
     });
+  };
+
+  // Leader starts customization (transitions partner too)
+  const startCustomization = () => {
+    setStep('customizer');
+    if (socket && role === 'leader') {
+      socket.emit('start-customization');
+    }
   };
 
   // Leader triggers camera screen
@@ -134,6 +147,7 @@ export const BoothProvider = ({ children }) => {
         customization,
         setCustomization,
         updateCustomization,
+        startCustomization,
         proceedToCamera,
         photos,
         setPhotos,
