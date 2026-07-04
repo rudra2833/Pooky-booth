@@ -181,8 +181,8 @@ const RoomHome = () => {
         <p className="pooky-subtitle">long distance memories</p>
 
         <p className="lobby-description">
-          A real-time photo booth that connects you with your partner, friends, or family
-          miles away. Smile together, snap synced photos, and style beautiful memories!
+          Miles apart, but matching smiles. Here's to capturing beautiful moments together,
+          because every second with you is a memory I want to keep forever, my sweet Sani. 🎀
         </p>
       </div>
 
