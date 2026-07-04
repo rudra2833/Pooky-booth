@@ -40,7 +40,7 @@ const JoinRoom = ({ onBack }) => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Priya"
+            placeholder="Your name..."
             className="room-input text-center"
             maxLength={20}
             disabled={isLoading}

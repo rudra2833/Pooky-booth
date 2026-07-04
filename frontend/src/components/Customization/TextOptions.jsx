@@ -43,7 +43,7 @@ const TextOptions = ({ customization, onChange, disabled = false }) => {
           type="text"
           value={text}
           onChange={handleTextChange}
-          placeholder="e.g. Rudra & Ananya 2026"
+          placeholder="e.g. Us & Them 💖"
           disabled={disabled}
           maxLength={30}
           className="cute-text-input"

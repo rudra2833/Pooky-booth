@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
   });
 
   // 2. Join room event
-  socket.on('join-room', ({ roomCode }) => {
+  socket.on('join-room', ({ roomCode, partnerName }) => {
     console.log(`User ${socket.id} attempting to join room ${roomCode}`);
     const result = roomManager.joinRoom(roomCode, socket.id);
 
@@ -69,8 +69,8 @@ io.on('connection', (socket) => {
     });
 
     // Relay partner's name to leader if provided
-    if (data.partnerName) {
-      socket.to(roomCode).emit('partner-name', { name: data.partnerName });
+    if (partnerName) {
+      socket.to(roomCode).emit('partner-name', { name: partnerName });
     }
   });
 

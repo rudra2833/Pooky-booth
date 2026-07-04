@@ -91,7 +91,7 @@ const RoomHome = () => {
               type="text"
               value={leaderNameInput}
               onChange={(e) => setLeaderNameInput(e.target.value)}
-              placeholder="e.g. Rudra"
+              placeholder="Your name..."
               className="room-input text-center"
               maxLength={20}
               autoFocus
